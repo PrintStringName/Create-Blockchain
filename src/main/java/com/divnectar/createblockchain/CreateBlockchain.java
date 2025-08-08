@@ -1,9 +1,19 @@
 package com.divnectar.createblockchain;
 
 import com.divnectar.createblockchain.block.ModBlocks;
+import com.divnectar.createblockchain.fluid.ModFluidTypes;
+import com.divnectar.createblockchain.fluid.ModFluids;
+import com.divnectar.createblockchain.item.ModCreativeModeTabs;
 import com.divnectar.createblockchain.item.ModItems;
+import com.divnectar.createblockchain.loot.AddItemModifier;
+import com.divnectar.createblockchain.setup.ModLootModifiers;
 import com.divnectar.createblockchain.sound.ModSounds;
 import com.divnectar.createblockchain.util.CapabilityRegistry;
+import com.mojang.serialization.MapCodec;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.slf4j.Logger; // <-- ADDED IMPORT
 
 import com.mojang.logging.LogUtils;
@@ -31,7 +41,11 @@ public class CreateBlockchain {
         LOGGER.info("Initializing Create: Blockchain for Minecraft 1.21.1");
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
-        ModSounds.register(modEventBus); // Register our custom sounds
+        ModSounds.register(modEventBus);
+        ModLootModifiers.register(modEventBus);
+        ModFluids.register(modEventBus);
+        ModFluidTypes.register(modEventBus);
+        ModCreativeModeTabs.register(modEventBus); // Register the creative tab
         modEventBus.register(new CapabilityRegistry());
 
         NeoForge.EVENT_BUS.register(this);

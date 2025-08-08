@@ -28,10 +28,11 @@ import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 
 import java.util.List;
 
-public class CurrencyMinerBlockEntity extends BlockEntity implements IHaveGoggleInformation {
+public class CurrencyMinerBlockEntity extends BlockEntity implements IHaveGoggleInformation, GeoAnimatable {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final EnergyStorage energyStorage;

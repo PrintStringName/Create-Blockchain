@@ -1,5 +1,12 @@
 {
   "variants": {
-    "": { "model": "createblockchain:block/currency_miner" }
+    "facing=north,powered=false": { "model": "createblockchain:block/currency_miner" },
+    "facing=east,powered=false":  { "model": "createblockchain:block/currency_miner", "y": 90 },
+    "facing=south,powered=false": { "model": "createblockchain:block/currency_miner", "y": 180 },
+    "facing=west,powered=false":  { "model": "createblockchain:block/currency_miner", "y": 270 },
+    "facing=north,powered=true": { "model": "createblockchain:block/currency_miner_on" },
+    "facing=east,powered=true":  { "model": "createblockchain:block/currency_miner_on", "y": 90 },
+    "facing=south,powered=true": { "model": "createblockchain:block/currency_miner_on", "y": 180 },
+    "facing=west,powered=true":  { "model": "createblockchain:block/currency_miner_on", "y": 270 }
   }
 }

@@ -14,5 +14,7 @@
   "goggle.createblockchain.info.usage": "Receiving",
   "goggle.createblockchain.info.rate": "Mining Rate",
   "goggle.createblockchain.info.cost": "Cost per Coin",
-  "goggle.createblockchain.info.stored": "Stored"
+  "goggle.createblockchain.info.stored": "Stored",
+  "item.createblockchain.mining_core": "Mining Core",
+  "item.createblockchain.cryotheum_coolant_bucket": "Cryotheum Coolant Bucket"
 }

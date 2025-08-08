@@ -148,6 +148,8 @@ dependencies {
     implementation "maven.modrinth:numismatics:yU04m392"
     implementation "maven.modrinth:create:tS7ygzAE"
     implementation "maven.modrinth:createaddition:zBlHCLs2"
+    implementation "maven.modrinth:geckolib:DTo3uxPN"
+
 //    implementation "maven.modrinth:emi:ouSj7NfF"
 //    implementation "maven.modrinth:jei:3dgEkJue"
 }

@@ -2,11 +2,13 @@ package com.divnectar.createblockchain.block;
 
 import com.divnectar.createblockchain.CreateBlockchain;
 import com.divnectar.createblockchain.block.entity.CurrencyMinerBlockEntity;
+import com.divnectar.createblockchain.fluid.ModFluids;
 import com.divnectar.createblockchain.item.ModItems;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -25,6 +27,10 @@ public class ModBlocks {
 
     public static final DeferredHolder<Item, BlockItem> CURRENCY_MINER_ITEM = ModItems.ITEMS.register("currency_miner",
             () -> new BlockItem(CURRENCY_MINER.get(), new Item.Properties()));
+
+    // Register the physical block for our new fluid
+    public static final DeferredHolder<Block, LiquidBlock> CRYOTHEUM_COOLANT_BLOCK = BLOCKS.register("cryotheum_coolant_block",
+            () -> new LiquidBlock(ModFluids.SOURCE_CRYOTHEUM_COOLANT.get(), BlockBehaviour.Properties.of().noCollission().strength(100f).noLootTable()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CurrencyMinerBlockEntity>> CURRENCY_MINER_BE =
             BLOCK_ENTITIES.register("currency_miner_be", () ->

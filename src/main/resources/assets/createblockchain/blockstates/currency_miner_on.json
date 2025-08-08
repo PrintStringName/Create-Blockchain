@@ -1,0 +1,7 @@
+{
+  "parent": "createblockchain:block/currency_miner_custom",
+  "textures": {
+    "0": "createblockchain:block/currency_miner_on",
+    "particle": "createblockchain:block/currency_miner_on"
+  }
+}

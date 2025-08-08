@@ -4,6 +4,8 @@ import com.divnectar.createblockchain.CreateBlockchain;
 import com.divnectar.createblockchain.block.ModBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.api.data.recipe.MechanicalCraftingRecipeBuilder;
+import com.simibubi.create.api.data.recipe.MixingRecipeGen;
+import com.simibubi.create.content.kinetics.mixer.MixingRecipe;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -38,6 +40,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .key('I', BuiltInRegistries.ITEM.get(ResourceLocation.parse("createaddition:iron_wire")))
                 .key('W', BuiltInRegistries.ITEM.get(ResourceLocation.parse("createaddition:copper_wire")))
                 .build(recipeOutput, ResourceLocation.fromNamespaceAndPath(CreateBlockchain.MODID, "mechanical_crafting/currency_miner"));
+
 
     }
 }

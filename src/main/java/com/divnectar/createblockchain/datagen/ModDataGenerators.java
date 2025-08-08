@@ -19,6 +19,9 @@ public class ModDataGenerators {
 
         // Register the recipe provider
         generator.addProvider(event.includeServer(), new ModRecipeProvider(packOutput, lookupProvider));
-        // Other providers (for models, block states, etc.) would be registered here as well.
+        // Register the loot table provider
+        generator.addProvider(event.includeServer(), new ModGlobalLootModifiersProvider(packOutput, lookupProvider));
+        // Add the new, dedicated provider for mixing recipes
+        generator.addProvider(event.includeServer(), new BlockchainMixingRecipeGen(packOutput, lookupProvider));
     }
 }

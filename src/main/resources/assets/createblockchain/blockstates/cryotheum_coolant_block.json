@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "createblockchain:block/cryotheum_coolant_block"
+    }
+  }
+}
