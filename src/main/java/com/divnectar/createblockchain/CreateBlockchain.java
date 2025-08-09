@@ -1,6 +1,7 @@
 package com.divnectar.createblockchain;
 
 import com.divnectar.createblockchain.block.ModBlocks;
+import com.divnectar.createblockchain.client.CurrencyMinerRenderer;
 import com.divnectar.createblockchain.fluid.ModFluidTypes;
 import com.divnectar.createblockchain.fluid.ModFluids;
 import com.divnectar.createblockchain.item.ModCreativeModeTabs;
@@ -10,6 +11,9 @@ import com.divnectar.createblockchain.setup.ModLootModifiers;
 import com.divnectar.createblockchain.sound.ModSounds;
 import com.divnectar.createblockchain.util.CapabilityRegistry;
 import com.mojang.serialization.MapCodec;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -51,11 +55,24 @@ public class CreateBlockchain {
         NeoForge.EVENT_BUS.register(this);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        // This checks if we are on the physical client and registers the renderer event if so.
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            modEventBus.addListener(this::registerRenderers);
+        }
+
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("HELLO FROM COMMON SETUP");
     }
+
+    // This method will be called on the client during setup to register our block entity renderer.
+    private void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(ModBlocks.CURRENCY_MINER_BE.get(), CurrencyMinerRenderer::new);
+    }
+
+
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {

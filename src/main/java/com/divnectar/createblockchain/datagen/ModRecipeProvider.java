@@ -2,6 +2,7 @@ package com.divnectar.createblockchain.datagen;
 
 import com.divnectar.createblockchain.CreateBlockchain;
 import com.divnectar.createblockchain.block.ModBlocks;
+import com.simibubi.create.AllFluids;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.api.data.recipe.MechanicalCraftingRecipeBuilder;
 import com.simibubi.create.api.data.recipe.MixingRecipeGen;
@@ -13,6 +14,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -40,6 +42,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .key('I', BuiltInRegistries.ITEM.get(ResourceLocation.parse("createaddition:iron_wire")))
                 .key('W', BuiltInRegistries.ITEM.get(ResourceLocation.parse("createaddition:copper_wire")))
                 .build(recipeOutput, ResourceLocation.fromNamespaceAndPath(CreateBlockchain.MODID, "mechanical_crafting/currency_miner"));
+        
+
+//        // Example 1: Simple recipe - Netherrack + Water -> Magma Block
+//        new MixingRecipe(recipeId("magma_block_from_netherrack"))
+//                .require(Items.NETHERRACK)
+//                .require(Fluids.WATER, 250) // Requires 250mb of Water
+//                .output(Items.MAGMA_BLOCK)
+//                .duration(200) // Ticks to process
+//                .save(recipeOutput); // Use .save() instead of .register()
 
 
     }

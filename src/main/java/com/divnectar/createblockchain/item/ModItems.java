@@ -17,7 +17,7 @@ public class ModItems {
             DeferredRegister.create(BuiltInRegistries.ITEM, CreateBlockchain.MODID);
 
     public static final DeferredHolder<Item, Item> MINING_CORE = ITEMS.register("mining_core",
-            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE).stacksTo(1).durability(1000)));
 
     public static final DeferredHolder<Item, BucketItem> CRYOTHEUM_COOLANT_BUCKET = ITEMS.register("cryotheum_coolant_bucket",
             () -> new BucketItem(ModFluids.SOURCE_CRYOTHEUM_COOLANT.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));

@@ -1,0 +1,58 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "idle": {
+      "loop": true,
+      "animation_length": 0.05,
+      "bones": {
+        "2": { "position": [0, 0, 2] },
+        "3": { "position": [0, 0, 2] },
+        "4": { "position": [0, 0, 2] },
+        "5": { "position": [0, 0, 0] },
+        "BLINK": { "scale": [0, 0, 0] },
+        "NOBLINK": { "position": [0, 0, 0] }
+      }
+    },
+    "animation.Currency MinerGGL.transition": {
+      "loop": true,
+      "animation_length": 2.5,
+      "bones": {
+        "NOBLINK": {
+          "position": {
+            "0.0": {
+              "vector": [0, 0, 0]
+            },
+            "0.4583": {
+              "vector": [0, 0, 0]
+            },
+            "0.5": {
+              "vector": [0, -6, -7]
+            },
+            "0.7917": {
+              "vector": [0, -6, -7]
+            },
+            "0.8333": {
+              "vector": [0, 0, 0]
+            },
+            "1.25": {
+              "vector": [0, 0, 0]
+            },
+            "1.2917": {
+              "vector": [0, -6, -7]
+            },
+            "1.5833": {
+              "vector": [0, -6, -7]
+            },
+            "1.625": {
+              "vector": [0, 0, 0]
+            },
+            "2.0": {
+              "vector": [0, 0, 0]
+            }
+          }
+        }
+      }
+    }
+  },
+  "geckolib_format_version": 2
+}

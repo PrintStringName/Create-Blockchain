@@ -10,11 +10,17 @@
   "block.createblockchain.currency_miner": "Currency Miner",
   "block.createblockchain.currency_miner": "Currency Miner",
 
-  "goggle.createblockchain.info.header": "Currency Miner",
-  "goggle.createblockchain.info.usage": "Receiving",
+  "goggle.createblockchain.info.header": "    Currency Miner",
+  "goggle.createblockchain.info.usage": "Energy Usage",
   "goggle.createblockchain.info.rate": "Mining Rate",
   "goggle.createblockchain.info.cost": "Cost per Coin",
   "goggle.createblockchain.info.stored": "Stored",
+  "goggle.createblockchain.info.heat": "Heat",
+  "goggle.createblockchain.info.durability": "Durability",
+  "goggle.createblockchain.info.coolant": "Coolant",
+  "goggle.createblockchain.info.overheated": "Overheated",
+  "goggle.createblockchain.info.no_core": "Insert Mining Core",
   "item.createblockchain.mining_core": "Mining Core",
-  "item.createblockchain.cryotheum_coolant_bucket": "Cryotheum Coolant Bucket"
+  "item.createblockchain.cryotheum_coolant_bucket": "Cryotheum Coolant Bucket",
+  "goggle.createblockchain.info.broken": "Core Depleted - Insert Mining Core"
 }
