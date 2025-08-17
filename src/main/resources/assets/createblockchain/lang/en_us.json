@@ -2,6 +2,10 @@
   "itemGroup.createblockchain": "Example Mod Tab",
   "block.createblockchain.example_block": "Example Block",
   "item.createblockchain.example_item": "Example Item",
+  "block.createblockchain.piggy_bank": "Piggy Bank",
+  "block.createblockchain.mining_core_geode": "Mining Core Geode",
+  "item.createblockchain.remote_finder": "Remote Miner Finder",
+  "fluid_type.createblockchain.cryotheum_coolant": "Cryotheum Coolant",
 
   "createblockchain.configuration.title": "Create: Blockchain Configs",
   "createblockchain.configuration.section.createblockchain.common.toml": "Create: Blockchain Configs",

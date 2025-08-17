@@ -27,14 +27,24 @@ public class ModGlobalLootModifiersProvider extends GlobalLootModifierProvider {
                 // Use AnyOfCondition to target multiple loot tables
                 AnyOfCondition.anyOf(
                         LootTableIdCondition.builder(ResourceLocation.parse("minecraft:chests/buried_treasure")),
+                        LootTableIdCondition.builder(ResourceLocation.parse("minecraft:chests/shipwreck_treasure"))
+                ).build(),
+                // Condition for a 20% chance to apply
+                LootItemRandomChanceCondition.randomChance(0.2f).build()
+        }, new ItemStack(ModItems.MINING_CORE.get()))); // Pass an ItemStack
+
+        add("piggy_banks_in_chests", new AddItemModifier(new LootItemCondition[] {
+                // Use AnyOfCondition to target multiple loot tables
+                AnyOfCondition.anyOf(
+                        LootTableIdCondition.builder(ResourceLocation.parse("minecraft:chests/buried_treasure")),
                         LootTableIdCondition.builder(ResourceLocation.parse("minecraft:chests/shipwreck_treasure")),
                         LootTableIdCondition.builder(ResourceLocation.parse("minecraft:chests/simple_dungeon")),
                         LootTableIdCondition.builder(ResourceLocation.parse("minecraft:chests/abandoned_mineshaft")),
                         LootTableIdCondition.builder(ResourceLocation.parse("minecraft:chests/desert_pyramid"))
                 ).build(),
                 // Condition for a 20% chance to apply
-                LootItemRandomChanceCondition.randomChance(0.2f).build()
-        }, new ItemStack(ModItems.MINING_CORE.get()))); // Pass an ItemStack
+                LootItemRandomChanceCondition.randomChance(0.3f).build()
+        }, new ItemStack(ModItems.PIGGY_BANK_ITEM.get()))); // Pass an ItemStack
 
         // Modifier specifically for Trial Chamber reward chests
         add("miner_core_in_trial_chambers", new AddItemModifier(new LootItemCondition[] {

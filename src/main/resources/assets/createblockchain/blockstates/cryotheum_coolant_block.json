@@ -1,7 +1,5 @@
 {
   "variants": {
-    "": {
-      "model": "createblockchain:block/cryotheum_coolant_block"
-    }
+    "": { "model": "minecraft:block/air" }
   }
 }

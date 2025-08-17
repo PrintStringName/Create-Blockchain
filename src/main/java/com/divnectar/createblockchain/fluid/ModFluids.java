@@ -21,10 +21,15 @@ public class ModFluids {
     public static final DeferredHolder<Fluid, FlowingFluid> FLOWING_CRYOTHEUM_COOLANT = FLUIDS.register("flowing_cryotheum_coolant",
             () -> new BaseFlowingFluid.Flowing(ModFluids.CRYOTHEUM_COOLANT_PROPERTIES));
 
+    // This properties object correctly links all the different parts of your fluid together.
     public static final BaseFlowingFluid.Properties CRYOTHEUM_COOLANT_PROPERTIES = new BaseFlowingFluid.Properties(
+            // The FluidType, Source, and Flowing fluids can be passed directly as they are part of the same system.
             ModFluidTypes.CRYOTHEUM_COOLANT_TYPE, SOURCE_CRYOTHEUM_COOLANT, FLOWING_CRYOTHEUM_COOLANT)
-            .slopeFindDistance(2).levelDecreasePerBlock(2).block(ModBlocks.CRYOTHEUM_COOLANT_BLOCK)
-            .bucket(ModItems.CRYOTHEUM_COOLANT_BUCKET);
+            .slopeFindDistance(2).levelDecreasePerBlock(2)
+            // CORRECTED: The block and bucket must be wrapped in a Supplier lambda.
+            // This tells the game to get the block/bucket only when it's ready, fixing the initialization order issue.
+            .block(() -> ModBlocks.CRYOTHEUM_COOLANT_BLOCK.get())
+            .bucket(() -> ModItems.CRYOTHEUM_COOLANT_BUCKET.get());
 
     public static void register(IEventBus eventBus) {
         FLUIDS.register(eventBus);

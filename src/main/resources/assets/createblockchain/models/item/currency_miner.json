@@ -1,3 +1,6 @@
 {
-  "parent": "createblockchain:block/currency_miner"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "createblockchain:item/currency_miner_item"
+  }
 }

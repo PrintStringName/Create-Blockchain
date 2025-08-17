@@ -26,10 +26,16 @@ public class ModFluidTypes {
                     .density(15)
                     .viscosity(5)
                     .temperature(200)
+                    .canSwim(true)
+                    .canDrown(true)
+                    .canPushEntity(true)
+                    .supportsBoating(true)
+                    .canHydrate(true)
+                    .motionScale(0.014D)
                     .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
                     .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
                     .sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH)) {
-                // CORRECTED: This block tells the game which textures to use for the fluid, fixing the crash.
+
                 @Override
                 public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
                     consumer.accept(new IClientFluidTypeExtensions() {

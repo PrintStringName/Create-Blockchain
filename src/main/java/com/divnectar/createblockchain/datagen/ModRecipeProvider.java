@@ -2,6 +2,7 @@ package com.divnectar.createblockchain.datagen;
 
 import com.divnectar.createblockchain.CreateBlockchain;
 import com.divnectar.createblockchain.block.ModBlocks;
+import com.divnectar.createblockchain.item.ModItems;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.api.data.recipe.MechanicalCraftingRecipeBuilder;
@@ -9,9 +10,11 @@ import com.simibubi.create.api.data.recipe.MixingRecipeGen;
 import com.simibubi.create.content.kinetics.mixer.MixingRecipe;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
@@ -25,6 +28,19 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.REMOTE_FINDER.get())
+                .pattern("BRB")
+                .pattern("ICI")
+                .pattern("BEB")
+                .define('B', BuiltInRegistries.ITEM.get(ResourceLocation.parse("create:brass_casing"))) // Using Create's Electron Tube
+                .define('R', Items.REDSTONE_TORCH)
+                .define('E', BuiltInRegistries.ITEM.get(ResourceLocation.parse("create:electron_tube")))
+                .define('I', Items.IRON_INGOT)
+                .define('C', Items.COMPASS)
+                .unlockedBy("has_compass", has(Items.COMPASS)) // Unlocks the recipe in the book
+                .save(recipeOutput); // Generates the file: 'remote_finder.json'
+
         // Recipe generation logic will be placed here.
         MechanicalCraftingRecipeBuilder.shapedRecipe(ModBlocks.CURRENCY_MINER.get())
                 // Define the 5x4 pattern of the recipe

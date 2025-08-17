@@ -22,7 +22,10 @@ public class ModCreativeModeTabs {
                         // Add all your items and blocks to the tab here
                         pOutput.accept(ModBlocks.CURRENCY_MINER.get());
                         pOutput.accept(ModItems.MINING_CORE.get());
+                        pOutput.accept(ModItems.PIGGY_BANK_ITEM.get()); // Add the piggy bank
+                        pOutput.accept(ModItems.REMOTE_FINDER.get()); // Add the piggy bank
                         pOutput.accept(ModItems.CRYOTHEUM_COOLANT_BUCKET.get());
+                        pOutput.accept(new ItemStack(ModItems.MINING_CORE_GEODE_ITEM.get()));
                     })
                     .build());
 

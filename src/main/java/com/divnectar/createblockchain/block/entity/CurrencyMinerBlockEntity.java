@@ -14,12 +14,14 @@ import dev.ithundxr.createnumismatics.content.backend.Coin;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -44,22 +46,23 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class CurrencyMinerBlockEntity extends BlockEntity implements GeoBlockEntity, IHaveGoggleInformation {
+    // --- CONSTANTS ---
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
+    private static final int MAX_HEAT = 100;
     protected static final RawAnimation ACTIVE_ANIM = RawAnimation.begin().thenLoop("animation.Currency MinerGGL.transition");
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
 
+    // --- COMPONENTS ---
     private final EnergyStorage energyStorage;
-    private final ItemStackHandler itemHandler = new ItemStackHandler(2);
+    private final ItemStackHandler itemHandler = new ItemStackHandler(2); // Slot 0: Output, Slot 1: Maintenance
     private final FluidTank fluidTank = new FluidTank(4000);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    // --- STATE ---
     private long energyToMine;
     private long accumulatedEnergy = 0;
     private int lastEnergyConsumed = 0;
-    private int heat = 0;
-    private boolean isCoolingDown = false;
-    private static final int MAX_HEAT = 100;
+    private double heat = 0;
 
     public CurrencyMinerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.CURRENCY_MINER_BE.get(), pos, state);
@@ -67,79 +70,122 @@ public class CurrencyMinerBlockEntity extends BlockEntity implements GeoBlockEnt
         this.energyToMine = Config.BASE_ENERGY_PER_COIN.get();
     }
 
+    // --- GETTERS ---
     public EnergyStorage getEnergyStorage() { return this.energyStorage; }
     public ItemStackHandler getItemHandler() { return this.itemHandler; }
     public FluidTank getFluidTank() { return this.fluidTank; }
 
+    // --- TICK LOGIC ---
     public static void tick(Level level, BlockPos pos, BlockState state, CurrencyMinerBlockEntity be) {
         if (level.isClientSide) return;
 
         be.updateMiningCost();
 
-        ItemStack coreStack = be.itemHandler.getStackInSlot(1);
-        boolean isBroken = coreStack.isEmpty() || coreStack.getDamageValue() >= coreStack.getMaxDamage();
+        // Determine the machine's various possible states
+        boolean isBroken = be.isCoreBroken();
+        boolean isOverheating = be.heat >= Config.OVERHEAT_THRESHOLD.get();
+        int potentialEnergyInput = be.energyStorage.extractEnergy(Config.MAX_ENERGY_CONSUMPTION.get(), true);
+        boolean hasPower = potentialEnergyInput > 0;
 
-        if (be.isCoolingDown) {
-            if (be.heat <= Config.COOLDOWN_THRESHOLD.get()) {
-                be.isCoolingDown = false;
+        // The machine only makes *progress* if all conditions are met.
+        boolean isMakingProgress = hasPower && !isBroken && !isOverheating;
+
+        if (isMakingProgress) {
+            // If it can work, then it consumes energy, generates heat, and does its job.
+            be.processWork(potentialEnergyInput);
+            be.lastEnergyConsumed = potentialEnergyInput;
+        } else {
+            // If it's not making progress (broken, overheated, or no power), it consumes no energy.
+            be.lastEnergyConsumed = 0;
+        }
+
+        // Cooling should happen every tick, regardless of the working state.
+        be.applyCooling();
+
+        // If the machine is overheating, emit smoke particles.
+        if (isOverheating && level instanceof ServerLevel serverLevel) {
+            if (level.random.nextInt(4) == 0) { // Control particle density
+                serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE,
+                        pos.getX() + level.random.nextDouble(),
+                        pos.getY() + 1.2,
+                        pos.getZ() + level.random.nextDouble(),
+                        1, 0.0, 0.05, 0.0, 0.02);
             }
-        } else if (be.heat >= Config.OVERHEAT_THRESHOLD.get()) {
-            be.isCoolingDown = true;
         }
 
-        int energyToConsume = 0;
-        boolean isWorking = false;
+        // The machine is visually "active" as long as it has power and isn't broken.
+        // This decouples the visual/animation state from the overheating flicker.
+        boolean isVisuallyActive = hasPower && !isBroken;
 
-        if (!isBroken && !be.isCoolingDown) {
-            energyToConsume = be.energyStorage.extractEnergy(Config.MAX_ENERGY_CONSUMPTION.get(), true);
-            if (energyToConsume > 0) {
-                isWorking = true;
-                be.energyStorage.extractEnergy(energyToConsume, false);
-                be.accumulatedEnergy += be.getEnergyWithHeatModifier(energyToConsume);
-                be.heat = Math.min(MAX_HEAT, be.heat + Config.HEAT_GENERATION_RATE.get());
-            }
+        // Update the block's visual state based on whether it's visually active.
+        if (state.getValue(CurrencyMinerBlock.POWERED) != isVisuallyActive) {
+            level.setBlock(pos, state.setValue(CurrencyMinerBlock.POWERED, isVisuallyActive), 3);
         }
 
-        be.handleCooling();
-
-        if (state.getValue(CurrencyMinerBlock.POWERED) != isWorking) {
-            level.setBlock(pos, state.setValue(CurrencyMinerBlock.POWERED, isWorking), 3);
-        }
-
-        if (be.accumulatedEnergy >= be.energyToMine) {
-            int coinsToMine = (int) (be.accumulatedEnergy / be.energyToMine);
-            for (int i = 0; i < coinsToMine; i++) be.mineCoin();
-            be.accumulatedEnergy %= be.energyToMine;
-        }
-
-        if (be.lastEnergyConsumed != energyToConsume || level.getGameTime() % 20 == 0) {
-            be.lastEnergyConsumed = energyToConsume;
+        // Send periodic updates to the client for the goggle display.
+        if (level.getGameTime() % 20 == 0) {
             setChanged(level, pos, state);
             level.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
         }
     }
 
-    // This method was accidentally removed and is now restored.
-    private void tryConsumeCore() {
-        // This logic is now handled by checking the core's durability directly.
-        // This method is a placeholder in case we want to add logic for when a new core is inserted.
+    private void processWork(int energyConsumed) {
+        // 1. Actually consume the energy from the buffer.
+        energyStorage.extractEnergy(energyConsumed, false);
+
+        // 2. Generate heat based on the energy consumed.
+        // This is a simple additive process.
+        double heatGenerated = energyConsumed * Config.HEAT_PER_FE.get();
+        this.heat = Math.min(MAX_HEAT, this.heat + heatGenerated);
+
+        // 3. Add the energy (with heat modifiers) to the accumulated total for mining.
+        accumulatedEnergy += getEnergyWithHeatModifier(energyConsumed);
+
+        if (accumulatedEnergy >= energyToMine) {
+            int coinsToMine = (int) (accumulatedEnergy / energyToMine);
+            for (int i = 0; i < coinsToMine; i++) {
+                mineCoin();
+            }
+            accumulatedEnergy %= energyToMine;
+        }
+    }
+
+    private void applyCooling() {
+        if (this.heat <= 0) {
+            return; // No cooling needed if there's no heat.
+        }
+
+        // Start with the base passive cooling factor.
+        double totalCoolingFactor = Config.PASSIVE_COOLING_PERCENT.get();
+
+        // Check for active coolants and add their power.
+        if (!this.fluidTank.isEmpty()) {
+            if (this.fluidTank.getFluid().getFluid() == Fluids.WATER) {
+                totalCoolingFactor += Config.WATER_COOLING_PERCENT.get();
+                this.fluidTank.drain(5, FluidTank.FluidAction.EXECUTE); // Consume a small amount of coolant
+            } else if (this.fluidTank.getFluid().getFluid() == ModFluids.SOURCE_CRYOTHEUM_COOLANT.get()) {
+                totalCoolingFactor += Config.CRYOTHEUM_COOLING_PERCENT.get();
+                this.fluidTank.drain(5, FluidTank.FluidAction.EXECUTE); // Cryotheum is more effective but consumed at the same rate
+            }
+        }
+
+        // Apply the combined cooling percentage.
+        // The hotter the machine, the more heat is dissipated.
+        this.heat *= (1.0 - totalCoolingFactor);
+
+        // Ensure heat doesn't dip into negatives from floating point errors.
+        if (this.heat < 0) {
+            this.heat = 0;
+        }
+    }
+
+    private boolean isCoreBroken() {
+        ItemStack coreStack = this.itemHandler.getStackInSlot(1);
+        return coreStack.isEmpty() || coreStack.getDamageValue() >= coreStack.getMaxDamage();
     }
 
     public ItemStack removeCoreForPlayer() {
         return this.itemHandler.extractItem(1, 1, false);
-    }
-
-    private void handleCooling() {
-        if (this.heat > 0) {
-            int coolingPower = Config.PASSIVE_COOLING_RATE.get();
-            if (!this.fluidTank.isEmpty()) {
-                if (this.fluidTank.getFluid().getFluid() == Fluids.WATER || this.fluidTank.getFluid().getFluid() == ModFluids.SOURCE_CRYOTHEUM_COOLANT.get()) {
-                    coolingPower += Config.ACTIVE_COOLING_RATE.get();
-                    this.fluidTank.drain(1, FluidTank.FluidAction.EXECUTE);
-                }
-            }
-            this.heat = Math.max(0, this.heat - coolingPower);
-        }
     }
 
     private int getEnergyWithHeatModifier(int energyIn) {
@@ -240,8 +286,7 @@ public class CurrencyMinerBlockEntity extends BlockEntity implements GeoBlockEnt
         tag.put("fluid", fluidTank.writeToNBT(provider, new CompoundTag()));
         tag.putInt("lastEnergyConsumed", this.lastEnergyConsumed);
         tag.putLong("energyToMine", this.energyToMine);
-        tag.putInt("heat", this.heat);
-        tag.putBoolean("isCoolingDown", this.isCoolingDown);
+        tag.putDouble("heat", this.heat);
     }
 
     @Override
@@ -253,8 +298,7 @@ public class CurrencyMinerBlockEntity extends BlockEntity implements GeoBlockEnt
         if (tag.contains("fluid")) fluidTank.readFromNBT(provider, tag.getCompound("fluid"));
         this.lastEnergyConsumed = tag.getInt("lastEnergyConsumed");
         this.energyToMine = tag.getLong("energyToMine");
-        this.heat = tag.getInt("heat");
-        this.isCoolingDown = tag.getBoolean("isCoolingDown");
+        this.heat = tag.getDouble("heat");
     }
 
     // --- GOGGLE INFORMATION ---
@@ -274,12 +318,12 @@ public class CurrencyMinerBlockEntity extends BlockEntity implements GeoBlockEnt
                     .append(Component.literal(": " + currentDurability + " / " + maxDurability).withStyle(currentDurability < maxDurability * 0.1 ? ChatFormatting.YELLOW : ChatFormatting.WHITE)));
         }
 
-        if (this.isCoolingDown) {
+        if (this.heat >= Config.OVERHEAT_THRESHOLD.get()) {
             tooltip.add(Component.literal("  ").append(Component.translatable("goggle." + modId + ".info.overheated").withStyle(ChatFormatting.RED)));
         } else {
             tooltip.add(Component.literal("  ")
                     .append(Component.translatable("goggle." + modId + ".info.heat"))
-                    .append(Component.literal(": " + this.heat + "%").withStyle(this.heat > 75 ? ChatFormatting.YELLOW : ChatFormatting.WHITE)));
+                    .append(Component.literal(": " + (int)this.heat + "%").withStyle(this.heat > 75 ? ChatFormatting.YELLOW : ChatFormatting.WHITE)));
         }
 
         tooltip.add(Component.literal("  ")
@@ -289,7 +333,7 @@ public class CurrencyMinerBlockEntity extends BlockEntity implements GeoBlockEnt
         tooltip.add(Component.literal("  ").append(Component.translatable("goggle." + modId + ".info.usage")).append(Component.literal(": " + this.lastEnergyConsumed + " FE/t").withStyle(ChatFormatting.AQUA)));
 
         double coinsPerMinute = 0;
-        if (this.lastEnergyConsumed > 0 && !this.isCoolingDown) {
+        if (this.lastEnergyConsumed > 0 && this.heat < Config.OVERHEAT_THRESHOLD.get()) {
             double ticksPerCoin = (double) this.energyToMine / getEnergyWithHeatModifier(this.lastEnergyConsumed);
             coinsPerMinute = (1200.0) / ticksPerCoin;
         }

@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "createblockchain:block/mining_core_geode" }
+  }
+}

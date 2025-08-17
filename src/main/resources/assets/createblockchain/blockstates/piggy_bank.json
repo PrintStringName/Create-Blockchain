@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "createblockchain:block/piggy_bank" },
+    "facing=east":  { "model": "createblockchain:block/piggy_bank", "y": 90 },
+    "facing=south": { "model": "createblockchain:block/piggy_bank", "y": 180 },
+    "facing=west":  { "model": "createblockchain:block/piggy_bank", "y": 270 }
+  }
+}

@@ -1,2 +1,4 @@
-// 1.21.1	2025-07-25T20:57:22.730570544	Recipes
+// 1.21.1	2025-08-14T20:38:49.669579948	Recipes
+514793245bda860feea6d42a4de5ee7cf08cf815 data/createblockchain/advancement/recipes/tools/remote_finder.json
 e45af29fc9960d9ccc29f56d97d71f06c12ef6c6 data/createblockchain/recipe/mechanical_crafting/currency_miner.json
+714d89ea3927c8940b2aab399ca427e37afde215 data/createblockchain/recipe/remote_finder.json

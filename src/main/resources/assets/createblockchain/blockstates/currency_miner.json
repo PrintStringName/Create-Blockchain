@@ -1,4 +1,8 @@
 {
+  "textures": {
+    "0": "createblockchain:block/currency_miner",
+    "particle": "createblockchain:block/currency_miner"
+  },
   "variants": {
     "facing=north,powered=false": { "model": "createblockchain:block/currency_miner" },
     "facing=east,powered=false":  { "model": "createblockchain:block/currency_miner", "y": 90 },

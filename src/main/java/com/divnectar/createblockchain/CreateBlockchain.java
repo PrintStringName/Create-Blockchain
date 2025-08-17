@@ -2,10 +2,12 @@ package com.divnectar.createblockchain;
 
 import com.divnectar.createblockchain.block.ModBlocks;
 import com.divnectar.createblockchain.client.CurrencyMinerRenderer;
+import com.divnectar.createblockchain.client.PiggyBankRenderer;
 import com.divnectar.createblockchain.fluid.ModFluidTypes;
 import com.divnectar.createblockchain.fluid.ModFluids;
 import com.divnectar.createblockchain.item.ModCreativeModeTabs;
 import com.divnectar.createblockchain.item.ModItems;
+import com.divnectar.createblockchain.item.RemoteFinderItem;
 import com.divnectar.createblockchain.loot.AddItemModifier;
 import com.divnectar.createblockchain.setup.ModLootModifiers;
 import com.divnectar.createblockchain.sound.ModSounds;
@@ -52,6 +54,12 @@ public class CreateBlockchain {
         ModCreativeModeTabs.register(modEventBus); // Register the creative tab
         modEventBus.register(new CapabilityRegistry());
 
+        // register the data component for the remote
+        RemoteFinderItem.registerDataComponents(modEventBus);
+
+        // register the energy capability provider for the remote item
+        modEventBus.addListener(RemoteFinderItem.CapabilityHooks::registerCaps);
+
         NeoForge.EVENT_BUS.register(this);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -70,6 +78,7 @@ public class CreateBlockchain {
     // This method will be called on the client during setup to register our block entity renderer.
     private void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlocks.CURRENCY_MINER_BE.get(), CurrencyMinerRenderer::new);
+        event.registerBlockEntityRenderer(ModBlocks.PIGGY_BANK_BE.get(), PiggyBankRenderer::new);
     }
 
 
