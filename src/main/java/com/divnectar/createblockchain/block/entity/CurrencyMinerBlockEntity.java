@@ -67,6 +67,7 @@ public class CurrencyMinerBlockEntity extends BlockEntity implements IHaveGoggle
         if (energyToConsume > 0) {
             be.energyStorage.extractEnergy(energyToConsume, false);
             be.accumulatedEnergy += energyToConsume;
+            LOGGER.info("CurrencyMiner at {} consumed {} FE this tick (accumulated: {} FE)", be.getBlockPos(), energyToConsume, be.accumulatedEnergy);
         }
 
         if (be.accumulatedEnergy >= be.energyToMine) {
